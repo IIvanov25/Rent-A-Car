@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Rent_A_Car.Models.Request>
 
 @{
-    ViewData["Title"] = "Requests";
+    ViewData["Title"] = "Request";
 }
 
 <h1>Index</h1>
@@ -31,7 +31,7 @@
         @foreach (var item in Model) {
             <tr>
                 <td>
-                @Html.DisplayFor(modelItem => item.Car.Model)
+                @Html.DisplayFor(modelItem => item.CarId)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.StartDate)

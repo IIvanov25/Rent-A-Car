@@ -52,30 +52,39 @@ namespace Rent_A_Car.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-				User user = new User
-				{
-					UserName = model.UserName,
-					FirstName = model.FirstName,
-					LastName = model.LastName,
-					EGN = model.EGN,
-					PhoneNumber = model.PhoneNumber,
-					Email = model.Email,
-					Password = model.Password
-				};
+				var existingUser = await userManager.FindByEmailAsync(model.Email);
 
-				var result = await userManager.CreateAsync(user, model.Password);
-
-				if (result.Succeeded)
+				if (existingUser == null)
 				{
-					return RedirectToAction("Login", "Account");
-				}
-				else
-				{
-					foreach (var error in result.Errors)
+					User user = new User
 					{
-						ModelState.AddModelError("", error.Description);
+						UserName = model.UserName,
+						FirstName = model.FirstName,
+						LastName = model.LastName,
+						EGN = model.EGN,
+						PhoneNumber = model.PhoneNumber,
+						Email = model.Email,
+						Password = model.Password
+					};
+
+					var result = await userManager.CreateAsync(user, model.Password);
+
+					if (result.Succeeded)
+					{
+						return RedirectToAction("Login", "Account");
 					}
-					return View(model);
+					else
+					{
+						foreach (var error in result.Errors)
+						{
+							ModelState.AddModelError("", error.Description);
+						}
+						return View(model);
+					}
+				}
+				else if (existingUser.EGN == model.EGN || existingUser.UserName == model.UserName || existingUser.Email == model.Email)
+				{
+					ModelState.AddModelError(string.Empty, "This user already exists.");
 				}
 			}
 			return View(model);

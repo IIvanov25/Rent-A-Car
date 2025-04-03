@@ -11,6 +11,7 @@ namespace Rent_A_Car.Models
 		public string EGN { get; set; }
 		public string PhoneNumber { get; set; }
 		public ICollection<Request> Requests { get; set; }
+		public string DisplayInfo => $"{FirstName} {LastName} - {EGN}";
 		public User()
 		{
 

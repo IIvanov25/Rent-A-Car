@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.CodeAnalysis.Elfie.Model;
+using System.ComponentModel.DataAnnotations;
 
 namespace Rent_A_Car.Models
 {
@@ -11,12 +12,13 @@ namespace Rent_A_Car.Models
 		[Required]
 		public string Model { get; set; }
 		[Required]
-		public DateTime YearOfProduction { get; set; }
+		public int YearOfProduction { get; set; }
 		[Required]
 		public int Seats { get; set; }
 		[Required]
 		public string Description { get; set; }
 		[Required]
 		public double PricePerDay { get; set; }
+		public string DisplayInfo => $"{Brand} {Model}";
 	}
 }

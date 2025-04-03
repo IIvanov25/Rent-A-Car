@@ -64,7 +64,12 @@ namespace Rent_A_Car.Controllers
 		{
 			var loggedUser = _userManager.GetUserId(User);
 			var currentLoggedUsers = new List<User>();
-			currentLoggedUsers.Add(_context.Users.FirstOrDefault(u => u.Id == loggedUser));
+			var user = _context.Users.FirstOrDefault(u => u.Id == loggedUser);
+
+			if (user != null)
+			{
+				currentLoggedUsers.Add(user);
+			}
 
 			if (User.IsInRole("Admin"))
 			{
@@ -85,12 +90,18 @@ namespace Rent_A_Car.Controllers
 		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create([Bind("Id,CarId,StartDate,EndDate,Id")] Request request)
+		public async Task<IActionResult> Create([Bind("Id,CarId,StartDate,EndDate,UserId")] Request request)
 		{
 			var existingRequest = await _context.Request.FirstOrDefaultAsync(r => r.CarId == request.CarId);
 			if (existingRequest == null)
 			{
-				_context.Request.Add(request);
+				_context.Add(request);
+				await _context.SaveChangesAsync();
+				return RedirectToAction(nameof(Index));
+			}
+			else if (existingRequest.StartDate != request.StartDate && existingRequest.EndDate != request.EndDate)
+			{
+				_context.Add(request);
 				await _context.SaveChangesAsync();
 				return RedirectToAction(nameof(Index));
 			}
@@ -106,8 +117,12 @@ namespace Rent_A_Car.Controllers
 		//return View();
 
 		// GET: Request/Edit/5
+		[Authorize(Roles = "Admin")]
 		public async Task<IActionResult> Edit(int? id)
 		{
+			{
+
+			}
 			if (id == null)
 			{
 				return NotFound();
@@ -126,34 +141,42 @@ namespace Rent_A_Car.Controllers
 		// POST: Request/Edit/5
 		// To protect from overposting attacks, enable the specific properties you want to bind to.
 		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+		[Authorize(Roles = "Admin")]
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Edit(int id, [Bind("Id,CarId,StartDate,EndDate,UserId,IsTaken")] Request request)
+		public async Task<IActionResult> Edit(int id, [Bind("Id,CarId,StartDate,EndDate,UserId")] Request request)
 		{
 			if (id != request.Id)
 			{
 				return NotFound();
 			}
-
-			if (ModelState.IsValid)
+			try
 			{
-				try
+				var existingRequest = await _context.Request.FindAsync(id);
+
+				if (existingRequest == null)
 				{
-					_context.Update(request);
-					await _context.SaveChangesAsync();
+					return NotFound();
 				}
-				catch (DbUpdateConcurrencyException)
-				{
-					if (!RequestExists(request.Id))
-					{
-						return NotFound();
-					}
-					else
-					{
-						throw;
-					}
-				}
+
+				existingRequest.CarId = request.CarId;
+				existingRequest.StartDate = request.StartDate;
+				existingRequest.EndDate = request.EndDate;
+				existingRequest.UserId = request.UserId;
+
+				await _context.SaveChangesAsync();
 				return RedirectToAction(nameof(Index));
+			}
+			catch (DbUpdateConcurrencyException)
+			{
+				if (!RequestExists(request.Id))
+				{
+					return NotFound();
+				}
+				else
+				{
+					throw;
+				}
 			}
 			ViewData["CarId"] = new SelectList(_context.Car, "Id", "Id", request.CarId);
 			ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", request.UserId);
@@ -161,6 +184,7 @@ namespace Rent_A_Car.Controllers
 		}
 
 		// GET: Request/Delete/5
+		[Authorize(Roles = "Admin")]
 		public async Task<IActionResult> Delete(int? id)
 		{
 			if (id == null)

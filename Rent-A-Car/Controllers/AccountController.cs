@@ -10,11 +10,13 @@ namespace Rent_A_Car.Controllers
 	{
 		private readonly SignInManager<User> signInManager;
 		private readonly UserManager<User> userManager;
+		private readonly RoleManager<IdentityRole> roleManager;
 
-		public AccountController(SignInManager<User> signInManager, UserManager<User> userManager)
+		public AccountController(SignInManager<User> signInManager, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
 		{
 			this.signInManager = signInManager;
 			this.userManager = userManager;
+			this.roleManager = roleManager;
 		}
 		public IActionResult Login()
 		{
@@ -67,11 +69,22 @@ namespace Rent_A_Car.Controllers
 						Password = model.Password
 					};
 
+					var adminRole = "Admin";
+					roleManager.CreateAsync(new IdentityRole(adminRole)).Wait();
+
 					var result = await userManager.CreateAsync(user, model.Password);
 
 					if (result.Succeeded)
 					{
-						return RedirectToAction("Login", "Account");
+						if (user.Email == "admin@gmail.com")
+						{
+							await userManager.AddToRoleAsync(user, adminRole);
+							return RedirectToAction("Login", "Account");
+						}
+						else
+						{
+							return RedirectToAction("Login", "Account");
+						}
 					}
 					else
 					{
@@ -136,6 +149,7 @@ namespace Rent_A_Car.Controllers
 
 				if (userToEdit != null)
 				{
+					userToEdit.Password = model.NewPassword;
 					var result = await userManager.RemovePasswordAsync(userToEdit);
 					if (result.Succeeded)
 					{

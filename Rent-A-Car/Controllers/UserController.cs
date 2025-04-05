@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Rent_A_Car.Models;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ public class UserController : Controller
 
 	public async Task<IActionResult> BrowseUsers()
 	{
-		var users = _userManager.Users.ToList();
+		var users = await _userManager.Users.ToListAsync();
 		return View(users);
 	}
 
@@ -60,16 +61,13 @@ public class UserController : Controller
 
 	// POST: User/DeleteConfirmed
 	[HttpPost]
-	[ActionName("Delete")]
 	public async Task<IActionResult> DeleteConfirmed(string id)
 	{
 		var user = await _userManager.FindByIdAsync(id);
 		if (user == null) return NotFound(); // If user not found, return 404
 
-		var result = await _userManager.DeleteAsync(user);
-		if (result.Succeeded)
-			return RedirectToAction("BrowseUsers"); // Redirect to users list after successful deletion
+		await _userManager.DeleteAsync(user);
+		return RedirectToAction(nameof(BrowseUsers)); // Redirect to users list after successful deletion
 
-		return View(user); // Return to the Delete view if deletion failed
 	}
 }

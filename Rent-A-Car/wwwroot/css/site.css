@@ -108,6 +108,28 @@ body {
         color: white;
     }
 
+.button-navbar { /* Navbar */
+    display: inline-block;
+    padding: 3px;
+    margin: 4px;
+    height: 40px;
+    width: 110px;
+    background-color: white;
+    font-family: Bahnschrift SemiBold;
+    color: black;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 18px;
+    border: 4px solid #e08e4f;
+    transition-duration: 0.3s;
+}
+
+    .button-navbar:hover {
+        background-color: #e08e4f;
+        color: white;
+    }
+
 .image-container {
     position: absolute;
     width: 100vw;

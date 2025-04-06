@@ -39,11 +39,12 @@
 						@Html.DisplayFor(modelItem => item.CarId)
 					</td>
 					<td>
-						@Html.DisplayFor(modelItem => item.StartDate)
+						@item.StartDate.ToString("MM/dd/yyyy")
 					</td>
 					<td>
-						@Html.DisplayFor(modelItem => item.EndDate)
+						@item.EndDate.ToString("MM/dd/yyyy")
 					</td>
+
 					<td>
 						@Html.DisplayFor(modelItem => item.UserId)
 					</td>

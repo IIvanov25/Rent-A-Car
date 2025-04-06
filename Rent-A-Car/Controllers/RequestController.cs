@@ -99,7 +99,7 @@ namespace Rent_A_Car.Controllers
 				await _context.SaveChangesAsync();
 				return RedirectToAction(nameof(Index));
 			}
-			else if (existingRequest.StartDate != request.StartDate && existingRequest.EndDate != request.EndDate)
+			else if (existingRequest.StartDate.Date != request.StartDate.Date && existingRequest.EndDate.Date != request.EndDate.Date)
 			{
 				_context.Add(request);
 				await _context.SaveChangesAsync();
@@ -112,9 +112,6 @@ namespace Rent_A_Car.Controllers
 
 			return RedirectToAction(nameof(Index));
 		}
-		//ViewData["CarId"] = new SelectList(_context.Car, "Id", "Model", "Brand", "Brand");
-		//ViewData["UserId"] = new SelectList(_context.Users, "Id", "EGN", "FirstName", "FirstName");
-		//return View();
 
 		// GET: Request/Edit/5
 		[Authorize(Roles = "Admin")]
